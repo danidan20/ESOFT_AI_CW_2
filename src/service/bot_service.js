@@ -1,19 +1,18 @@
-export const getAIResponse = async (message) => {
-    // Simulate typing delay
-    await new Promise((resolve) => setTimeout(resolve, 1000 + Math.random() * 1000));
+import axios from 'axios';
 
-    // Very basic response logic (replace with your actual AI logic)
-    const lowerCaseMessage = message.toLowerCase();
+const API_BASE_URL = 'YOUR_API_ENDPOINT_HERE'; 
 
-    if (lowerCaseMessage.includes('hello') || lowerCaseMessage.includes('hi')) {
-        return "Hello there! How can I assist you?";
-    } else if (lowerCaseMessage.includes('how are you')) {
-        return "I'm doing well, thank you! How about you?";
-    } else if (lowerCaseMessage.includes('help')) {
-        return "I can help with many things!  Try asking me a question, or say 'hello'.";
-    } else if (lowerCaseMessage.includes('thank you')) {
-        return "You're welcome!";
-    } else {
-        return "I'm still learning, but I can try to answer your question.  Could you say more?";
+class ApiService {
+  async sendMessageToAI(message) {
+    try {
+      const response = await axios.post(`${API_BASE_URL}/chat`, { message });
+      return response.data;
+    } catch (error) {
+      console.error('Error sending message to AI:', error);
+      throw error;
     }
-};
+  }
+}
+
+const apiService = new ApiService();
+export default apiService;
