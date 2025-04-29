@@ -1,6 +1,7 @@
 import { RouterProvider, createBrowserRouter, Navigate } from "react-router-dom";
 import ChatApp from "./../component/chatbot";
-import {TeachMe,DynamicFacts,StaticFacts} from "./../component/screen/admin";
+import { TeachMe, DynamicFacts, StaticFacts } from "./../component/screen/admin";
+import SystemUser from "../SystemUser";
 
 const Routes = () => {
 
@@ -9,12 +10,15 @@ const Routes = () => {
             path: "/",
             element: <ChatApp />,
         },
-        {path: "/admin",
+        {
+            path: "/admin",
+            element: <SystemUser />,
             children: [
                 { path: "teach-me", element: <TeachMe /> },
                 { path: "dynamic-facts", element: <DynamicFacts /> },
                 { path: "static-facts", element: <StaticFacts /> }
-            ]}
+            ]
+        }
     ];
 
     const router = createBrowserRouter([...routesForPublic]);

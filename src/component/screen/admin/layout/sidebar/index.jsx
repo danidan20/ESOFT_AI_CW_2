@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Avatar, Box, IconButton, Typography, useTheme } from "@mui/material";
 import React, { useState, useContext } from "react";
-import { tokens } from "../../../theme/theme";
+import { tokens } from "./../../../../../theme/theme";
 import { Menu, MenuItem, Sidebar } from "react-pro-sidebar";
 import {
   DashboardOutlined,
@@ -13,7 +13,7 @@ import {
 import WarehouseIcon from '@mui/icons-material/Warehouse';
 import avatar from "../../../../../assets/avatar.png";
 import Item from "./Item";
-import { ToggledContext } from "../../SystemUser";
+import { ToggledContext } from "./../../../../../SystemUser";
 
 const SideBar = () => {
   const [collapsed, setCollapsed] = useState(false);
@@ -70,7 +70,6 @@ const SideBar = () => {
                   textTransform="capitalize"
                   color={colors.greenAccent[500]}
                 >
-                  Gas By Gas
                 </Typography>
               </Box>
             )}
