@@ -1,137 +1,116 @@
-import { useContext, useState, useEffect } from "react";
-import * as React from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
+import React, { useState } from 'react';
 import {
     Box,
     Button,
-    IconButton,
-    Typography,
     useMediaQuery,
     useTheme,
-} from "@mui/material";
-import { CreateRounded } from "@mui/icons-material";
-import { Header, ProgressCircle, StatBox } from "../../../components";
-import { tokens } from "../../../theme/theme";
-import { DataGrid } from "@mui/x-data-grid";
-import Paper from "@mui/material/Paper";
-import OutletAddPopup from "./../../../components/outlet/OutletAddPopup"
-import OutletService from "./../../../services/outlet.service";
+    TextField,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+} from '@mui/material';
+import { Header } from '../../../components/Header';
+import { QuestionAnswer } from '@mui/icons-material';
+import { tokens } from '../../../../theme/theme';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import botAdminService from '../../../../service/BotAdminService';
 
-const columns = [
-    { field: "outletName", headerName: "Outlet Name", width: 200 },
-    { field: "outletAddress", headerName: "Outlet Address", width: 200 },
-    { field: "city", headerName: "City", width: 200 },
-    { field: "stock", headerName: "Stock", width: 200 }
-];
-
-const paginationModel = { page: 0, pageSize: 5 };
-
-function StaticFacts() {
-    const [isOutletPopupOpen, setIsOutletPopupOpen] = useState(false);
-    const [data, setData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+const StaticFacts = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const isXlDevices = useMediaQuery("(min-width: 1260px)");
-    const isMdDevices = useMediaQuery("(min-width: 724px)");
-    const isXsDevices = useMediaQuery("(max-width: 436px)");
-    const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const isMdDevices = useMediaQuery('(min-width: 724px)');
+    const isXsDevices = useMediaQuery('(max-width: 436px)');
+    const [isStaticFactsOpen, setIsStaticFactsOpen] = useState(false);
+    const [newPattern, setNewPattern] = useState('');
+    const [newResponse, setNewResponse] = useState('');
 
-    const handlePopupOpen = () => setIsPopupOpen(true);
-    const handlePopupClose = () => setIsPopupOpen(false);
-
-    const handleAddClick = () => {
-        setIsOutletPopupOpen(true);
+    const handleStaticFactsOpen = () => {
+        setIsStaticFactsOpen(true);
+        setNewPattern('');
+        setNewResponse('');
     };
 
-    const handleOutletPopupClose = () => {
-        setIsOutletPopupOpen(false);
+    const handleStaticFactsClose = () => {
+        setIsStaticFactsOpen(false);
     };
 
-    const handleFetchOutlets = () => {
-        fetchOutlets();
+    const handleAddStaticFact = async () => {
+        try {
+            await botAdminService.addStaticFact(newPattern, newResponse);
+            toast.success('Successfully added static fact!');
+            handleStaticFactsClose();
+        } catch (error) {
+            console.error('Error adding static fact:', error);
+            toast.error('Failed to add static fact.');
+        }
     };
-
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(true);
-            try {
-                const response = await OutletService.getAllOutlet();
-                if (response) {
-                    setData(response);
-                } else {
-                    setError("Data fetching error");
-                }
-            } catch (error) {
-                setError(error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-    }, []);
-
-    if (loading) {
-        return <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh', // Full viewport height
-            }}
-        >
-            <CircularProgress color="primary" sx={{ color: colors.blueAccent[700] }} />      </Box>;
-    }
-
-    if (error) {
-        return <p>Error: {error.message}</p>;
-    }
 
     return (
-
         <Box m="20px">
-            <Box display="flex" justifyContent="space-between">
-                <Header title="Oulter" subtitle="Outlets List" />
-                {!isXsDevices && (
-                                    <Box>
-                                        <Button
-                                            variant="contained"
-                                            sx={{
-                                                bgcolor: colors.blueAccent[700],
-                                                color: "#fcfcfc",
-                                                fontSize: isMdDevices ? "14px" : "10px",
-                                                fontWeight: "bold",
-                                                p: "10px 20px",
-                                                mt: "18px",
-                                                transition: ".3s ease",
-                                                ":hover": { bgcolor: colors.blueAccent[800] },
-                                            }}
-                                            startIcon={<CreateRounded />}
-                                            onClick={handleAddClick}
-                                        >
-                                            Add Outlet
-                                        </Button>
-                                    </Box>
-                                )}
+            <ToastContainer />
+            <Box display="flex" justifyContent="space-between" alignItems="center">
+                <Header title="Add Static Fact" />
+                <Box display="flex" alignItems="center">
+                    {!isXsDevices && (
+                        <>
+                            <Button
+                                variant="contained"
+                                sx={{
+                                    bgcolor: colors.grey[600],
+                                    color: '#fcfcfc',
+                                    fontSize: isMdDevices ? '14px' : '10px',
+                                    fontWeight: 'bold',
+                                    p: '10px 20px',
+                                    mt: '18px',
+                                    transition: '.3s ease',
+                                    ':hover': { bgcolor: colors.grey[700] },
+                                }}
+                                startIcon={<QuestionAnswer />}
+                                onClick={handleStaticFactsOpen}
+                            >
+                                Add Static Fact
+                            </Button>
+                        </>
+                    )}
+                </Box>
             </Box>
-            <Paper sx={{ height: 400, width: "100%" }}>
-                <DataGrid
-                    rows={data}
-                    columns={columns}
-                    initialState={{ pagination: { paginationModel } }}
-                    pageSizeOptions={[5, 10, 20]}
-                    sx={{ border: 0 }}
-                />
-            </Paper>
-            <OutletAddPopup
-                open={isOutletPopupOpen}
-                handleClose={handleOutletPopupClose}
-                fetchData={handleFetchOutlets}
-            />
 
+            <Dialog open={isStaticFactsOpen} onClose={handleStaticFactsClose}>
+                <DialogTitle>Add Static Fact</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        autoFocus
+                        margin="dense"
+                        id="pattern"
+                        label="Pattern"
+                        type="text"
+                        fullWidth
+                        value={newPattern}
+                        onChange={(e) => setNewPattern(e.target.value)}
+                    />
+                    <TextField
+                        margin="dense"
+                        id="response"
+                        label="Response"
+                        type="text"
+                        fullWidth
+                        multiline
+                        rows={4}
+                        value={newResponse}
+                        onChange={(e) => setNewResponse(e.target.value)}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleStaticFactsClose}>Cancel</Button>
+                    <Button onClick={handleAddStaticFact} variant="contained">
+                        Add
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </Box>
     );
-}
+};
+
 export default StaticFacts;
