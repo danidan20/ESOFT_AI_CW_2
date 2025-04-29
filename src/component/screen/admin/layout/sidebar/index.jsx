@@ -11,6 +11,8 @@ import {
   ReceiptOutlined,
 } from "@mui/icons-material";
 import WarehouseIcon from '@mui/icons-material/Warehouse';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
 import avatar from "../../../../../assets/avatar.png";
 import Item from "./Item";
 import { ToggledContext } from "./../../../../../SystemUser";
@@ -120,87 +122,17 @@ const SideBar = () => {
             colors={colors}
             icon={<DashboardOutlined />}
           />
-        </Menu>
-        <Typography
-          variant="h6"
-          color={colors.gray[300]}
-          sx={{ m: "15px 0 5px 20px" }}
-        >
-          {!collapsed ? "Gas Outlets" : " "}
-        </Typography>{" "}
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-
           <Item
-            title="Outlets"
-            path="/admin/outlets"
+            title="Dynamic Facts"
+            path="/admin/dynamic-facts"
             colors={colors}
-            icon={<WarehouseIcon />}
+            icon={<LightbulbIcon />}
           />
-
-
           <Item
-            title="Managers"
-            path="/admin/users"
+            title="Static Facts"
+            path="/admin/static-facts"
             colors={colors}
-            icon={<PeopleAltOutlined />}
-          />
-        </Menu>
-        <Typography
-          variant="h6"
-          color={colors.gray[300]}
-          sx={{ m: "15px 0 5px 20px" }}
-        >
-          {!collapsed ? "Users" : " "}
-          {!collapsed ? "Users" : " "}
-        </Typography>{" "}
-
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-
-          <Item
-            title="Stock"
-            path="/admin/stock"
-            colors={colors}
-            icon={<WarehouseIcon />}
-          />
-        </Menu>
-
-        <Menu
-          menuItemStyles={{
-            button: {
-              ":hover": {
-                color: "#868dfb",
-                background: "transparent",
-                transition: ".4s ease",
-              },
-            },
-          }}
-        >
-
-          <Item
-            title="Delivery"
-            path="/admin/delivery"
-            colors={colors}
-            icon={<WarehouseIcon />}
+            icon={<FactCheckIcon />}
           />
         </Menu>
       </Box>
@@ -210,4 +142,3 @@ const SideBar = () => {
 };
 
 export default SideBar;
-

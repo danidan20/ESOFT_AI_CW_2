@@ -14,7 +14,7 @@ const Routes = () => {
             path: "/admin",
             element: <SystemUser />,
             children: [
-                { path: "teach-me", element: <TeachMe /> },
+                { path: "", element: <TeachMe /> },
                 { path: "dynamic-facts", element: <DynamicFacts /> },
                 { path: "static-facts", element: <StaticFacts /> }
             ]
