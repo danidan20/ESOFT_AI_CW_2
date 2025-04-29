@@ -243,9 +243,9 @@ const StaticFacts = () => {
                     </TableCell>
                     <TableCell>{fact.response}</TableCell>
                     <TableCell>
-                      <IconButton onClick={() => handleEditStaticFactOpen(fact.pattern, fact.response)}>
+                      {/* <IconButton onClick={() => handleEditStaticFactOpen(fact.pattern, fact.response)}>
                         <Edit />
-                      </IconButton>
+                      </IconButton> */}
                       <IconButton color="error" onClick={() => handleDeleteStaticFact(fact.pattern)}>
                         <Delete />
                       </IconButton>
