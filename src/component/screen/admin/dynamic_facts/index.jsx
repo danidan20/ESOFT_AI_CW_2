@@ -10,7 +10,7 @@ import {
     DialogContent,
     DialogTitle,
 } from '@mui/material';
-import { Header } from '../../../components/Header';
+import { Header } from '../../../components';
 import { QuestionAnswer } from '@mui/icons-material';
 import { tokens } from '../../../../theme/theme';
 import { ToastContainer, toast } from 'react-toastify';

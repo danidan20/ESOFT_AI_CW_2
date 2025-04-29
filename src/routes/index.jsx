@@ -8,22 +8,16 @@ const Routes = () => {
         {
             path: "/",
             element: <ChatApp />,
-        }
-    ];
-
-    const routesForAdmin = [
-        {
-            path: "/admin",
-            element: <PrivateRoute><Dashboard /></PrivateRoute>,
+        },
+        {path: "/admin",
             children: [
                 { path: "teach-me", element: <TeachMe /> },
                 { path: "dynamic-facts", element: <DynamicFacts /> },
                 { path: "static-facts", element: <StaticFacts /> }
-            ]
-        }
+            ]}
     ];
 
-    const router = createBrowserRouter([...routesForPublic, ...routesForAdmin]);
+    const router = createBrowserRouter([...routesForPublic]);
 
     return <RouterProvider router={router} />;
 };

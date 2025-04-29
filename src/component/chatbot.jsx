@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   TextField,
   Button,
@@ -11,16 +11,19 @@ import {
   createTheme,
   ThemeProvider,
   Fab,
+  Avatar,
+  Snackbar,
+  Alert,
 } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
-import Avatar from '@mui/material/Avatar';
 import { styled } from '@mui/material/styles';
-import apiService from '../service/bot_service';
 import { blueGrey } from '@mui/material/colors';
 import { AnimatePresence, motion } from 'framer-motion';
+import chatService from '../service/bot_service'; // Chat service function
 
+// THEME CONFIGURATION
 const darkBlueTheme = createTheme({
   palette: {
     mode: 'dark',
@@ -55,7 +58,8 @@ const lightTheme = createTheme({
   },
 });
 
-const StyledChatContainer = styled(motion.div)(({ theme, open }) => ({
+// STYLED COMPONENTS
+const StyledChatContainer = styled(motion.div)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'column',
   backgroundColor: theme.palette.background.default,
@@ -83,7 +87,7 @@ const StyledChatContainer = styled(motion.div)(({ theme, open }) => ({
 const StyledChatHeader = styled(Typography)(({ theme }) => ({
   textAlign: 'center',
   marginBottom: theme.spacing(3),
-  color: theme.palette.text.primary, 
+  color: theme.palette.text.primary,
   fontWeight: 700,
   letterSpacing: '0.5px',
 }));
@@ -97,16 +101,16 @@ const StyledMessageArea = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper,
   maxHeight: '300px',
 }));
+
 const MessageBubble = styled(motion.div)(({ theme, role }) => ({
   padding: theme.spacing(1.5, 2),
   borderRadius: theme.shape.borderRadius * 2,
   maxWidth: '70%',
   marginBottom: theme.spacing(1.5),
   wordBreak: 'break-word',
-  backgroundColor:
-    role === 'user'
-      ? theme.palette.primary.main
-      : theme.palette.secondary.main,
+  backgroundColor: role === 'user'
+    ? theme.palette.primary.main
+    : theme.palette.secondary.main,
   color: theme.palette.primary.contrastText,
 }));
 
@@ -142,16 +146,15 @@ const StyledSendButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const Chatbot = () => {
+// MAIN COMPONENT
+const Chatbot = ({ model = 'transformer' }) => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = prefersDarkMode ? darkBlueTheme : lightTheme;
   const [open, setOpen] = useState(false);
-
-  const [messages, setMessages] = useState([
-    { id: 1, role: 'assistant', content: 'Hello! How can I help you today?' },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
 
   const scrollToBottom = () => {
@@ -165,29 +168,28 @@ const Chatbot = () => {
   }, [messages, open]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-    const userMessage = { id: Date.now(), role: 'user', content: input };
+    const userMessage = { role: 'user', content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput('');
     setLoading(true);
 
     try {
-      const aiResponseData = await apiService.sendMessageToAI(input);
+      const aiResponseData = await chatService.sendMessageToAI(input);
       const aiMessage = {
-        id: Date.now() + 1,
         role: 'assistant',
         content: aiResponseData.response,
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error('Failed to get AI response:', error);
+      const errorMessage = error.message || 'Sorry, I encountered an error. Please try again.';
+      setError(errorMessage);
       setMessages((prev) => [
         ...prev,
         {
-          id: Date.now() + 2,
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Please try again.',
+          content: errorMessage,
         },
       ]);
     } finally {
@@ -195,20 +197,24 @@ const Chatbot = () => {
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
+
   const toggleChatbot = () => {
     setOpen(!open);
   };
 
+  const handleCloseSnackbar = () => {
+    setError(null);
+  };
+
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{
-          position: 'fixed',
-          bottom: theme.spacing(3),
-          right: theme.spacing(3),
-          zIndex: 1000,
-        }}
-      >
+      <Box sx={{ position: 'fixed', bottom: theme.spacing(3), right: theme.spacing(3), zIndex: 1000 }}>
         <AnimatePresence>
           {open && (
             <StyledChatContainer
@@ -226,9 +232,9 @@ const Chatbot = () => {
 
               <StyledMessageArea component={Paper} elevation={0}>
                 <AnimatePresence>
-                  {messages.map((msg) => (
+                  {messages.map((msg, index) => (
                     <Box
-                      key={msg.id}
+                      key={index}
                       display="flex"
                       justifyContent={msg.role === 'user' ? 'flex-end' : 'flex-start'}
                       alignItems="flex-start"
@@ -260,13 +266,13 @@ const Chatbot = () => {
                   fullWidth
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSend()}
+                  onKeyDown={handleKeyPress}
                   placeholder="Type a message..."
                   disabled={loading}
                   variant="outlined"
                   size="small"
                 />
-                <StyledSendButton color="primary" onClick={handleSend} disabled={loading}>
+                <StyledSendButton onClick={handleSend} disabled={loading}>
                   {loading ? <CircularProgress size={24} color="inherit" /> : <SendIcon />}
                 </StyledSendButton>
               </StyledInputArea>
@@ -280,8 +286,23 @@ const Chatbot = () => {
           </Fab>
         )}
       </Box>
+      <Snackbar
+        open={!!error}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseSnackbar}
+          severity="error"
+          sx={{ width: '100%' }}
+        >
+          {error}
+        </Alert>
+      </Snackbar>
     </ThemeProvider>
   );
 };
 
 export default Chatbot;
+

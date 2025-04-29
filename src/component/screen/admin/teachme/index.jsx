@@ -60,14 +60,12 @@ const TeachMe = () => { // Changed component name to TeachMe
               <Button
                 variant="contained"
                 sx={{
-                  bgcolor: colors.grey[600],
                   color: "#fcfcfc",
                   fontSize: isMdDevices ? "14px" : "10px",
                   fontWeight: "bold",
                   p: "10px 20px",
                   mt: "18px",
                   transition: ".3s ease",
-                  ":hover": { bgcolor: colors.grey[700] },
                 }}
                 startIcon={<QuestionAnswer />}
                 onClick={handleTeachMeOpen}
