@@ -5,10 +5,11 @@ import Box from '@mui/material/Box';
 import IconButton, { IconButtonOwnProps } from '@mui/material/IconButton';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useColorScheme } from '@mui/material/styles';
+import { useColorScheme, useTheme } from '@mui/material/styles'; // Import useTheme
 
 export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
   const { mode, systemMode, setMode } = useColorScheme();
+  const theme = useTheme(); // Get the theme object
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -25,15 +26,15 @@ export default function ColorModeIconDropdown(props: IconButtonOwnProps) {
     return (
       <Box
         data-screenshot="toggle-mode"
-        sx={(theme) => ({
+        sx={{
           verticalAlign: 'bottom',
           display: 'inline-flex',
           width: '2.25rem',
           height: '2.25rem',
-          borderRadius: (theme.vars || theme).shape.borderRadius,
+          borderRadius: theme.shape.borderRadius, // Changed here
           border: '1px solid',
-          borderColor: (theme.vars || theme).palette.divider,
-        })}
+          borderColor: theme.palette.divider, // Changed here
+        }}
       />
     );
   }

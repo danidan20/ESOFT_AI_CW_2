@@ -1,15 +1,28 @@
-import React, { createContext, useState } from "react";
 import { Box, CssBaseline, ThemeProvider } from "@mui/material";
-import { ColorModeContext, useMode } from "./theme/theme";
 import { Navbar, SideBar } from "./component/screen/admin/layout/";
 import { Outlet } from "react-router-dom";
+import { createContext, useState, Dispatch, SetStateAction } from "react";
+import { Theme } from "@mui/material/styles"; // Import the Theme type
+import { useMode } from "./theme/theme"; // Import the useMode hook
 
-export const ToggledContext = createContext(null);
+interface ToggledContextValue {
+  toggled: boolean;
+  setToggled: Dispatch<SetStateAction<boolean>>;
+}
+
+interface ColorMode {
+  toggleColorMode: () => void;
+}
+
+export const ToggledContext = createContext<ToggledContextValue | null>(null);
+export const ColorModeContext = createContext<ColorMode>({ toggleColorMode: () => {} }); // Ensure context has the correct type
 
 function SystemUser() {
-  const [theme, colorMode] = useMode();
+  const modeAndColor = useMode();
+  const theme = modeAndColor[0] as Theme;
+  const colorMode = modeAndColor[1] as ColorMode;
   const [toggled, setToggled] = useState(false);
-  const values = { toggled, setToggled };
+  const values: ToggledContextValue = { toggled, setToggled };
 
   return (
     <ColorModeContext.Provider value={colorMode}>
